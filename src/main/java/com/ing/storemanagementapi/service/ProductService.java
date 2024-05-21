@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class ProductService {
+
+    protected static String PRODUCT_NOT_FOUND = "Product not found with id: ";
+    protected static String INSERT_WITH_ID_VIOLATION = "Can't insert a new product if it already has an id";
 
     @Autowired
     private ProductRepository productRepository;
@@ -24,7 +28,7 @@ public class ProductService {
     }
 
     public Product insertProduct(Product product) {
-        if (product.getId() != null) throw new ProductInsertionViolationException("can't insert a new product with an already existing id");
+        if (product.getId() != null) throw new ProductInsertionViolationException(INSERT_WITH_ID_VIOLATION);
         return productRepository.save(product);
     }
 
@@ -41,7 +45,7 @@ public class ProductService {
 
     private Product findProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND + id));
     }
 
     private void updateAllProductFields(Product fetchedProduct, Product updatedProduct) {
