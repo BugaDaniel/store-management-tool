@@ -1,9 +1,17 @@
 package com.ing.storemanagementapi.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
+import java.math.BigDecimal;
+
 
 @Entity
 public class Product {
@@ -12,16 +20,24 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "Product name cannot be empty")
+    @Size(max = 128, message = "Product name cannot exceed 128 characters")
     private String name;
-    private String description;
-    private double price;
+
+    @Column(name = "price", columnDefinition = "NUMERIC(10, 2)") // H2-specific column definition
+    @DecimalMin(value = "0.01", message = "Product price must be at least 0.01")
+    private BigDecimal price;
+
+    @Min(value = 0, message = "Product quantity cannot be negative")
     private int quantity;
+
+    private String description;
     private String category;
     private String brand;
 
     public Product() {}
 
-    public Product(String name, String description, double price, int quantity, String category, String brand) {
+    public Product(String name, String description, BigDecimal price, int quantity, String category, String brand) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -50,11 +66,11 @@ public class Product {
         this.description = description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
