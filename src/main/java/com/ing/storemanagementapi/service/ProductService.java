@@ -2,6 +2,7 @@ package com.ing.storemanagementapi.service;
 
 import com.ing.storemanagementapi.exception.ProductInsertionViolationException;
 import com.ing.storemanagementapi.exception.ProductNotFoundException;
+import com.ing.storemanagementapi.exception.ProductQuantityException;
 import com.ing.storemanagementapi.model.Product;
 import com.ing.storemanagementapi.repository.ProductRepository;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class ProductService {
 
     protected static String PRODUCT_NOT_FOUND = "Product not found with id: ";
     protected static String INSERT_WITH_ID_VIOLATION = "Can't insert a new product if it already has an id";
+    protected static String NEGATIVE_QUANTITY = "Product can't have a quantity lower than 0";
 
     @Autowired
     private ProductRepository productRepository;
@@ -52,6 +54,22 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Product changeProductQuantity(Long id, int newQuantity) {
+        logger.info("Changing quantity for product with id: {}", id);
+        Product product = findProductById(id);
+        int productQuantity = product.getQuantity();
+        productQuantity += newQuantity;
+        logger.debug("Product quantity after increment or decrement: {}",productQuantity);
+        if (productQuantity < 0) {
+            throw new ProductQuantityException(NEGATIVE_QUANTITY);
+        }
+
+        product.setQuantity(productQuantity);
+        return productRepository.save(product);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Long id) {
         logger.info("Deleting product with id: {}", id);
         findProductById(id);

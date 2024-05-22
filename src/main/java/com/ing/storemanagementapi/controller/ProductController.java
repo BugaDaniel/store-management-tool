@@ -3,6 +3,7 @@ package com.ing.storemanagementapi.controller;
 import com.ing.storemanagementapi.model.Product;
 import com.ing.storemanagementapi.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,18 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@Valid @RequestBody Product product, @PathVariable Long id) {
         Product updatedProduct = productService.updateProduct(id, product);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @PutMapping("/{id}/decrement/{newQuantity}")
+    public ResponseEntity<Product> decrementProductQuantity(@PathVariable Long id, @PathVariable @Min(1) int newQuantity) {
+        Product updatedProduct = productService.changeProductQuantity(id, newQuantity*(-1));
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+    @PutMapping("/{id}/increment/{newQuantity}")
+    public ResponseEntity<Product> incrementProductQuantity(@PathVariable Long id, @PathVariable @Min(1) int newQuantity) {
+        Product updatedProduct = productService.changeProductQuantity(id, newQuantity);
         return ResponseEntity.ok(updatedProduct);
     }
 
