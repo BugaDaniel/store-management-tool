@@ -5,6 +5,8 @@ import com.ing.storemanagementapi.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @RestController
@@ -27,14 +33,22 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<CollectionModel<EntityModel<Product>>> getAllProducts() {
+        List<EntityModel<Product>> products = productService.getAllProducts().stream()
+                .map(product -> EntityModel.of(product,
+                        linkTo(methodOn(ProductController.class).getProductById(product.getId())).withSelfRel(),
+                        linkTo(methodOn(ProductController.class).getAllProducts()).withRel("products")))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(CollectionModel.of(products, linkTo(methodOn(ProductController.class).getAllProducts()).withSelfRel()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<Product>> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(EntityModel.of(product,
+                linkTo(methodOn(ProductController.class).getProductById(product.getId())).withSelfRel(),
+                linkTo(methodOn(ProductController.class).getAllProducts()).withRel("products")
+        ));
     }
 
     @PostMapping
