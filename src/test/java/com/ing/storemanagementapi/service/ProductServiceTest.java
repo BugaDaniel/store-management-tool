@@ -57,7 +57,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testGetProductById() throws Exception {
+    void testGetProductById() {
         Product foundProduct = productService.getProductById(ProductRepositoryMockSetup.availableProductId);
 
         assertNotNull(foundProduct);
@@ -78,7 +78,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testInsertProduct() throws Exception {
+    void testInsertProduct() {
         Product product = ProductMockUtil.createProduct("1Name", "241.12", 2);
         Product savedProduct = productService.insertProduct(product);
 
