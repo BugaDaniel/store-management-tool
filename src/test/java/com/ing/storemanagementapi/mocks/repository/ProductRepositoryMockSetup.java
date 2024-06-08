@@ -16,7 +16,13 @@ public class ProductRepositoryMockSetup {
     private static final Random random = new Random();
 
     public static void setupProductRepositoryMocks(ProductRepository productRepository) {
-        // Mock behaviors for findById
+        mockFindById(productRepository);
+        mockFindAll(productRepository);
+        mockSave(productRepository);
+        mockDelete(productRepository);
+    }
+
+    private static void mockFindById(ProductRepository productRepository) {
         Mockito.when(productRepository.findById(Mockito.anyLong()))
                 .thenAnswer(invocation -> {
                     Long id = invocation.getArgument(0);
@@ -29,15 +35,17 @@ public class ProductRepositoryMockSetup {
                         return Optional.empty();
                     }
                 });
+    }
 
-        // Mock behaviors for findAll
+    private static void mockFindAll(ProductRepository productRepository) {
         Mockito.when(productRepository.findAll())
                 .thenReturn(List.of(
                         ProductMockUtil.createProduct("1Name1", "241.12", 7),
                         ProductMockUtil.createProduct("2Name2", "123.77", 77)
                 ));
+    }
 
-        // Mock behaviors for save
+    private static void mockSave(ProductRepository productRepository) {
         Mockito.when(productRepository.save(Mockito.any(Product.class)))
                 .thenAnswer(invocation -> {
                     Product product = invocation.getArgument(0);
@@ -49,8 +57,9 @@ public class ProductRepositoryMockSetup {
                     // if product already has id it means update is wanted
                     return product;
                 });
+    }
 
-        // Mock behaviors for deleteById
+    private static void mockDelete(ProductRepository productRepository) {
         Mockito.doNothing().when(productRepository).deleteById(Mockito.anyLong());
     }
 
