@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
-public class ProductServiceTest implements AutoCloseable {
+public class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
@@ -42,7 +42,9 @@ public class ProductServiceTest implements AutoCloseable {
 
     @AfterEach
     void tearDown() throws Exception {
-        closeable.close();
+        if (closeable != null) {
+            closeable.close();
+        }
     }
 
     @Test
@@ -121,12 +123,5 @@ public class ProductServiceTest implements AutoCloseable {
 
         assertTrue(actualMessage.contains(expectedMessage));
         verify(productRepository, times(0)).deleteById(id);
-    }
-
-    @Override
-    public void close() throws Exception {
-        if (closeable != null) {
-            closeable.close();
-        }
     }
 }
