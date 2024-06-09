@@ -35,9 +35,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Product>>> getAllProducts() {
         List<EntityModel<Product>> products = productService.getAllProducts().stream()
-                .map(product -> EntityModel.of(product,
-                        linkTo(methodOn(ProductController.class).getProductById(product.getId())).withSelfRel(),
-                        linkTo(methodOn(ProductController.class).getAllProducts()).withRel("products")))
+                .map(this::toEntityModel)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(CollectionModel.of(products, linkTo(methodOn(ProductController.class).getAllProducts()).withSelfRel()));
     }
@@ -45,10 +43,7 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Product>> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
-        return ResponseEntity.ok(EntityModel.of(product,
-                linkTo(methodOn(ProductController.class).getProductById(product.getId())).withSelfRel(),
-                linkTo(methodOn(ProductController.class).getAllProducts()).withRel("products")
-        ));
+        return ResponseEntity.ok(toEntityModel(product));
     }
 
     @PostMapping
@@ -79,5 +74,12 @@ public class ProductController {
     public ResponseEntity<String> deleteProductById(@PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.ok("Product with ID " + id + " deleted successfully.");
+    }
+
+    private EntityModel<Product> toEntityModel(Product product) {
+        return EntityModel.of(product,
+                linkTo(methodOn(ProductController.class).getProductById(product.getId())).withSelfRel(),
+                linkTo(methodOn(ProductController.class).getAllProducts()).withRel("products")
+        );
     }
 }
