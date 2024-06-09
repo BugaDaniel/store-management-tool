@@ -81,7 +81,7 @@ public class ProductService {
         logger.debug("Finding product with id: {}", id);
         return productRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Product not found with id: {}", id);
+                    logger.error(PRODUCT_NOT_FOUND + id);
                     return new ProductNotFoundException(PRODUCT_NOT_FOUND + id);
                 });
     }
