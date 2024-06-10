@@ -5,12 +5,11 @@ import com.ing.storemanagementapi.mocks.model.ProductMockUtil;
 import com.ing.storemanagementapi.mocks.repository.ProductRepositoryMockSetup;
 import com.ing.storemanagementapi.model.Product;
 import com.ing.storemanagementapi.repository.ProductRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,6 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
+@ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
     @Mock
@@ -32,23 +32,10 @@ public class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
-    private AutoCloseable closeable;
-
-    @BeforeEach
-    void setUp() {
-        closeable = MockitoAnnotations.openMocks(this);
-        ProductRepositoryMockSetup.setupProductRepositoryMocks(productRepository);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        if (closeable != null) {
-            closeable.close();
-        }
-    }
-
     @Test
     void testGetAllProducts() {
+        ProductRepositoryMockSetup.mockFindAll(productRepository);
+
         List<Product> products = productService.getAllProducts();
 
         assertNotNull(products);
@@ -58,6 +45,8 @@ public class ProductServiceTest {
 
     @Test
     void testGetProductById() {
+        ProductRepositoryMockSetup.mockFindById(productRepository);
+
         Product foundProduct = productService.getProductById(ProductRepositoryMockSetup.availableProductId);
 
         assertNotNull(foundProduct);
@@ -67,6 +56,8 @@ public class ProductServiceTest {
 
     @Test
     void testGetProductById_NotFound() {
+        ProductRepositoryMockSetup.mockFindById(productRepository);
+
         long id = 999L;
         Exception exception = assertThrows(ProductNotFoundException.class, () -> productService.getProductById(id));
 
@@ -79,6 +70,8 @@ public class ProductServiceTest {
 
     @Test
     void testInsertProduct() {
+        ProductRepositoryMockSetup.mockSave(productRepository);
+
         Product product = ProductMockUtil.createProduct("1Name", "241.12", 2);
         Product savedProduct = productService.insertProduct(product);
 
@@ -90,6 +83,9 @@ public class ProductServiceTest {
 
     @Test
     void testUpdateProduct() {
+        ProductRepositoryMockSetup.mockSave(productRepository);
+        ProductRepositoryMockSetup.mockFindById(productRepository);
+
         String name = "updName";
         String price = "77.42";
         int quantity = 33;
@@ -105,6 +101,9 @@ public class ProductServiceTest {
 
     @Test
     void testDeleteProductById() {
+        ProductRepositoryMockSetup.mockFindById(productRepository);
+        ProductRepositoryMockSetup.mockDelete(productRepository);
+
         productService.delete(ProductRepositoryMockSetup.availableProductId);
 
         verify(productRepository, times(1)).deleteById(ProductRepositoryMockSetup.availableProductId);
@@ -112,8 +111,9 @@ public class ProductServiceTest {
 
     @Test
     void testDeleteProductById_NotFound() {
-        long id = 8899L;
+        ProductRepositoryMockSetup.mockFindById(productRepository);
 
+        long id = 8899L;
         Exception exception = assertThrows(ProductNotFoundException.class, () -> {
             productService.delete(id);
         });
