@@ -23,9 +23,13 @@ public class ProductService {
     protected static String PRODUCT_NOT_FOUND = "Product not found with id: ";
     protected static String INSERT_WITH_ID_VIOLATION = "Can't insert a new product if it already has an id";
     protected static String NEGATIVE_QUANTITY = "Product can't have a quantity lower than 0";
+    
+    private final ProductRepository productRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public List<Product> getAllProducts() {
         logger.info("Fetching all products");
