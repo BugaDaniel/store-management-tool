@@ -47,13 +47,13 @@ The application includes user authentication and authorization, data validation,
 
 ## Endpoints
 ### ProductController
-- **GET /api/products/v1**: Fetch all products.
-- **GET /api/products/v1/{id}**: Fetch a product by ID.
-- **POST /api/products/v1**: Insert a new product.
-- **PUT /api/products/v1/{id}**: Update an existing product.
-- **PUT /api/products/v1/{id}/decrement/{newQuantity}**: Decrement product quantity.
-- **PUT /api/products/v1/{id}/increment/{newQuantity}**: Increment product quantity.
-- **DELETE /api/products/v1/{id}**: Delete a product by ID.
+- **GET /api/v1/products**: Fetch all products.
+- **GET /api/v1/products/{id}**: Fetch a product by ID.
+- **POST /api/v1/products**: Insert a new product.
+- **PUT /api/v1/products/{id}**: Update an existing product.
+- **PUT /api/v1/products/{id}/decrement/{newQuantity}**: Decrement product quantity.
+- **PUT /api/v1/products/{id}/increment/{newQuantity}**: Increment product quantity.
+- **DELETE /api/v1/products/{id}**: Delete a product by ID.
 
 ## Security Configuration
 ### SecurityConfig
