@@ -1,6 +1,6 @@
 package com.ing.storemanagementapi.service;
 
-import com.ing.storemanagementapi.exception.ProductInsertionViolationException;
+import com.ing.storemanagementapi.exception.ProductIdViolationException;
 import com.ing.storemanagementapi.exception.ProductNotFoundException;
 import com.ing.storemanagementapi.exception.ProductQuantityException;
 import com.ing.storemanagementapi.model.Product;
@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -23,6 +24,7 @@ public class ProductService {
     protected static String PRODUCT_NOT_FOUND = "Product not found with id: ";
     protected static String INSERT_WITH_ID_VIOLATION = "Can't insert a new product if it already has an id";
     protected static String NEGATIVE_QUANTITY = "Product can't have a quantity lower than 0";
+    protected static String UPDATE_ID_VIOLATION = "Product id is different than the provided id";
     
     private final ProductRepository productRepository;
 
@@ -43,7 +45,7 @@ public class ProductService {
     public Product insertProduct(Product product) {
         if (product.getId() != null) {
             logger.error("Attempted to insert a product with an existing id: {}", product.getId());
-            throw new ProductInsertionViolationException(INSERT_WITH_ID_VIOLATION);
+            throw new ProductIdViolationException(INSERT_WITH_ID_VIOLATION);
         }
 
         logger.info("Inserting new product: {}", product);
@@ -52,6 +54,10 @@ public class ProductService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Product updateProduct(Long id, Product updatedProduct) {
+        if(!Objects.equals(id, updatedProduct.getId())){
+            throw new ProductIdViolationException(UPDATE_ID_VIOLATION);
+        }
+
         Product product = findProductById(id);
         updateAllProductFields(product, updatedProduct);
         logger.info("Updating product with id: {}", id);

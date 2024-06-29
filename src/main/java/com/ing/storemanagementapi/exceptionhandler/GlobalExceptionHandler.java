@@ -1,6 +1,6 @@
 package com.ing.storemanagementapi.exceptionhandler;
 
-import com.ing.storemanagementapi.exception.ProductInsertionViolationException;
+import com.ing.storemanagementapi.exception.ProductIdViolationException;
 import com.ing.storemanagementapi.exception.ProductNotFoundException;
 import com.ing.storemanagementapi.exception.ProductQuantityException;
 import org.springframework.dao.DataAccessException;
@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ProductInsertionViolationException.class)
-    public ResponseEntity<String> handleTryToInsertProductWithIdException(ProductInsertionViolationException ex) {
+    @ExceptionHandler(ProductIdViolationException.class)
+    public ResponseEntity<String> handleTryToInsertProductWithIdException(ProductIdViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
