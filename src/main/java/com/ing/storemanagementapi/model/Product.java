@@ -24,7 +24,7 @@ public class Product {
     @Size(max = 128, message = "Product name cannot exceed 128 characters")
     private String name;
 
-    @Column(name = "price", columnDefinition = "NUMERIC(10, 2)") // H2-specific column definition
+    @Column(name = "price", columnDefinition = "NUMERIC(10, 2)") // SQL-based database specific column definition
     @DecimalMin(value = "0.01", message = "Product price must be at least 0.01")
     private BigDecimal price;
 
